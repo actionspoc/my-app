@@ -32,7 +32,8 @@ jobs:
         npm install
         npm run build
     - name: S3 Sync
-      uses: raulanatol/aws-s3-docker-action@master
+      uses: jakejarvis/s3-sync-action@v0.5.1
+
       with:
         args: --acl public-read --delete
       env:
