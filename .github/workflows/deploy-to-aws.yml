@@ -1,0 +1,59 @@
+# This is a basic workflow that is manually triggered
+
+name: Deploty to AWS
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      name:
+        # Friendly description to be shown in the UI instead of 'name'
+        description: 'Person to greet'
+        # Default value if no value is explicitly provided
+        default: 'World'
+        # Input has to be provided for the workflow to run
+        required: true
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "greet"
+  deploy:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.4.0
+    
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v2.4.1
+    
+    - name: Npm install and npm Build
+      run: |
+        npm intall
+        npm run build
+    - name: S3 Sync
+      uses: jakejarvis/s3-sync-action@v0.5.1
+      with:
+        args: --acl public-read --delete
+      env:
+        AWS_S3_BUCKET: ${{secrets.AWS_S3_BUCKET}}
+        AWS_ACCESS_KEY_ID : ${{secrets.AWS_ACCESS_KEY_ID}}
+        AWS_ACCESS_KEY : ${{secrets.AWS_ACCESS_KEY}}
+        AWS_REGION : 'ap-south-1'
+        SOURCE_DIR: 'dist'
+        
+    - name: Invalidate CloudFront
+      uses: chetan/invaliate-cloudfront-action@v1.3
+      env:
+        DISTRIBUTION: ${{secrets.DISTRIBUTION}}
+        PATHES: '/'
+        AWS_S3_BUCKET: ${{secrets.AWS_S3_BUCKET}}
+        AWS_ACCESS_KEY_ID : ${{secrets.AWS_ACCESS_KEY_ID}}
+        AWS_ACCESS_KEY : ${{secrets.AWS_ACCESS_KEY}}
+        AWS_REGION : 'ap-south-1'
+
+    
