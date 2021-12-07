@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png" />
-    <HelloWorld msg="Github Action CI/CD Workflow" />
+    <HelloWorld msg="Github Action CI/CD Workflow - Modified" />
   </div>
 </template>
 
